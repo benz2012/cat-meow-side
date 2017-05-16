@@ -1,9 +1,11 @@
+const path = require('path')
+
 module.exports = {
   entry: [
     './app/app.js'
   ],
   output: {
-    path: 'dist',
+    path: path.resolve(process.cwd(), 'dist'),
     publicPath: '/',
     filename: 'bundle.js'
   },
@@ -21,4 +23,7 @@ module.exports = {
       }
     ]
   },
+  resolve: {
+    modules: ['app', 'node_modules'],
+  }
 }
