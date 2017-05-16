@@ -17,6 +17,7 @@ export function create() {
   const player_coord = center(game.cache.getImage('cat'), [12,1])
   window.player = game.add.sprite(player_coord.x, player_coord.y, 'cat')
   game.physics.p2.enable(window.player)
+  window.player.body.fixedRotation = true;
 
   window.player.animations.add('left', [3, 4, 5], 10, true)
   window.player.animations.add('right', [6, 7, 8], 10, true)
