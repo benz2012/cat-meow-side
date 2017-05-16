@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Game from 'containers/Game'
+import GameContainer from 'containers/Game'
 import Jumbotron from 'components/Jumbotron'
 
 export default class Home extends React.Component {
@@ -8,7 +8,7 @@ export default class Home extends React.Component {
     return (
       <div>
         <Jumbotron />
-        <Game />
+        <GameContainer />
       </div>
     )
   }
