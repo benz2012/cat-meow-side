@@ -4,9 +4,9 @@
   "description": "A basic game of war, with cats.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "webpack": "webpack --progress --colors --watch",
+    "start": "node server"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Ben Zenker",
   "license": "ISC"
 }
