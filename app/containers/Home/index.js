@@ -3,6 +3,7 @@ import * as firebase from 'firebase'
 
 import Auth from 'containers/Auth'
 import GameContainer from 'containers/Game'
+import UserSettings from 'containers/UserSettings'
 import Jumbotron from 'components/Jumbotron'
 import { FIREBASE_CONFIG } from 'config'
 
@@ -10,8 +11,9 @@ export default class Home extends React.Component {
   constructor() {
     super()
     this.state = {
-      authenticated: false,
-      firebase: null
+      stage: null,
+      firebase: null,
+      uid: null
     }
   }
   componentWillMount() {
@@ -19,31 +21,64 @@ export default class Home extends React.Component {
     firebase.auth().signOut();
     this.setState(
       {firebase: firebase},
-      this.firebaseAuthObserver
+      this.observer
     )
   }
-  firebaseAuthObserver() {
+  stageView() {
+    const { stage } = this.state
+    let view = null
+    switch (stage) {
+      case 'AUTHENTICATION':
+        view = <Auth firebase={this.state.firebase} />
+        break
+      case 'SETTINGS':
+        view = <UserSettings firebase={this.state.firebase} uid={this.state.uid} />
+        break;
+      case 'GAMEPLAY':
+        view = <GameContainer />
+        break;
+      default:
+        view = null
+    }
+    return view
+  }
+  observer() {
+    this.setState({stage: 'AUTHENTICATION'})
     this.state.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in
-        console.log(`user ${user.email} is signed in with a uid of ${user.uid}`)
-        this.setState({authenticated: true})
+        this.setState({uid: user.uid})
+        console.log(`user ${user.email} is signed in with a uid of ${this.state.uid}`)
+
+        firebase.database().ref('cats/').once('value').then((snapshot) => {
+          const catSettings = snapshot.val()[this.state.uid]
+          if (!catSettings) {
+            this.setState({stage: 'SETTINGS'})
+            const catLiveRef = firebase.database().ref('cats/')
+            catLiveRef.on('value', (snapshot) => {
+              if (snapshot.val().hasOwnProperty(this.state.uid)) {
+                console.log(`user ${this.state.uid} chose the following settings: `)
+                console.log(snapshot.val()[this.state.uid])
+                this.setState({stage: 'GAMEPLAY'})
+                catLiveRef.off()
+              }
+            })
+          } else {
+            // setting have already been set
+            this.setState({stage: 'GAMEPLAY'})
+          }
+        })
       } else {
-        this.setState({authenticated: false})
+        this.setState({stage: 'AUTHENTICATION'})
       }
     })
   }
+
   render() {
-    const { authenticated } = this.state
     return (
       <div>
         <Jumbotron />
-        {
-          authenticated ?
-          <GameContainer /> :
-          <Auth firebase={this.state.firebase} />
-        }
-
+        {this.stageView()}
       </div>
     )
   }

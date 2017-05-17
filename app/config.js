@@ -12,6 +12,10 @@ GAME.CAT.TYPE = Object.freeze({
   WORRIER: 0,
   WARRIOR: 1,
 })
+GAME.CAT.HP = Object.freeze({
+  WORRIER: 10,
+  WARRIOR: 15,
+})
 GAME.CAT.COLOR = Object.freeze({
   WHITE_STRIPPED: 0,
   WHITE: 1,

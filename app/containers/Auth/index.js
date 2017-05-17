@@ -33,7 +33,9 @@ export default class Auth extends React.Component {
     }
   }
   callSubmit() {
+    console.log('someone wants to submit')
     const { choice } = this.state
+    console.log('they pressed it on the page: ' + choice)
     if (choice === 'choice-signup') {
       this.submitSignUp()
     } else if (choice === 'choice-login') {
@@ -41,6 +43,7 @@ export default class Auth extends React.Component {
     }
   }
   submitSignUp() {
+    console.log('signing someone up')
     const { email, password } = this.state
     const validations = validateAuth(email, password)
     this.setState({
@@ -57,6 +60,7 @@ export default class Auth extends React.Component {
     }
   }
   submitLogin() {
+    console.log('logging someone in')
     const { email, password } = this.state
     this.props.firebase.auth().signInWithEmailAndPassword(email, password).catch((error) => {
       console.log(error)
