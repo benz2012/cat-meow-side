@@ -7,7 +7,7 @@ window.player;
 
 import { GAME } from 'config'
 
-export function create(user, mapRef) {
+export function create(user, uid, fireDB) {
   game.physics.startSystem(Phaser.Physics.P2JS)
 
   const map = game.add.tilemap('map', 16, 16)
@@ -22,7 +22,7 @@ export function create(user, mapRef) {
   window.player = game.add.sprite(player_coord.x, player_coord.y, 'cat')
   game.physics.p2.enable(window.player)
   window.player.body.fixedRotation = true;
-  mapRef.set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})
+  fireDB.ref('map/' + uid).set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})
 
   window.player.animations.add('left', [3, 4, 5], 10, true)
   window.player.animations.add('right', [6, 7, 8], 10, true)
@@ -38,7 +38,13 @@ export function create(user, mapRef) {
   window.cursors = game.input.keyboard.createCursorKeys()
   game.camera.follow(window.player)
 
-  // draw all other players initially
+  // create opponent cats
+  Object.keys(window.catsOnMap).forEach((catId) => {
+    if (catId === uid) { return } // we already added our own cat
+    const { x, y } = window.catsOnMap[catId]
+    const cat = new Cat(game, fireDB, catId, x, y)
+    window.catSpritesOnMap[catId] = cat
+  })
 
 }
 

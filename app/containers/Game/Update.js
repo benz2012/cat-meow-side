@@ -1,3 +1,7 @@
+import Cat from './cat'
+
+const localMap = {}
+
 export function update(fireDB, uid) {
   window.player.body.setZeroVelocity()
 
@@ -52,14 +56,12 @@ export function update(fireDB, uid) {
   updates['map/' + uid + '/y'] = window.player.y
   fireDB.ref().update(updates)
 
-  const mapRef = fireDB.ref('map')
-  mapRef.on('child_added', (data) => {
-    // addCommentElement(postElement, data.key, data.val().text, data.val().author)
-  })
-  mapRef.on('child_changed', function(data) {
-    // setCommentValues(postElement, data.key, data.val().text, data.val().author)
-  })
-  mapRef.on('child_removed', function(data) {
-    // deleteComment(postElement, data.key)
+  Object.keys(window.actionStack).forEach((uid) => {
+    const userStack = window.actionStack[uid]
+    if (userStack.length > 0) {
+      const newestAction = userStack.pop()
+      window.actionStack[uid] = []
+      // update cat location here
+    }
   })
 }
