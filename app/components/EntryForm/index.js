@@ -14,6 +14,11 @@ export default class EntryForm extends React.Component {
   warn(label) {
     return <p><strong className='text-danger'>invalid {label}</strong></p>
   }
+  checkKey(e) {
+    if (e.keyCode == 13) {
+      this.props.callSubmit()
+    }
+  }
   render() {
     const { email, password, valid={email: true, password: true} } = this.props
     return (
@@ -26,6 +31,7 @@ export default class EntryForm extends React.Component {
             type='text'
             value={email}
             onChange={this.props.updateValue.bind(this)}
+            onKeyUp={this.checkKey.bind(this)}
             placeholder='example@email.com'
           />
         </div>
@@ -37,6 +43,7 @@ export default class EntryForm extends React.Component {
             type='password'
             value={password}
             onChange={this.props.updateValue.bind(this)}
+            onKeyUp={this.checkKey.bind(this)}
             placeholder='Password'
           />
         </div>

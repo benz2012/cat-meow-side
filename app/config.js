@@ -12,7 +12,7 @@ GAME.CAT.TYPE = Object.freeze({
   WORRIER: 0,
   WARRIOR: 1,
 })
-GAME.CAT.COLOR = Object.freese({
+GAME.CAT.COLOR = Object.freeze({
   WHITE_STRIPPED: 0,
   WHITE: 1,
   YELLOW_STRIPPED: 2,

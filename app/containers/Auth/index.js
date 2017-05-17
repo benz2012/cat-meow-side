@@ -32,6 +32,14 @@ export default class Auth extends React.Component {
       this.setState({password: e.target.value})
     }
   }
+  callSubmit() {
+    const { choice } = this.state
+    if (choice === 'choice-signup') {
+      this.submitSignUp()
+    } else if (choice === 'choice-login') {
+      this.submitLogin()
+    }
+  }
   submitSignUp() {
     const { email, password } = this.state
     const validations = validateAuth(email, password)
@@ -68,6 +76,7 @@ export default class Auth extends React.Component {
             email={email}
             password={password}
             updateValue={this.updateValue.bind(this)}
+            callSubmit={this.callSubmit.bind(this)}
             valid={{email: emailValid, password: passwordValid}}
           />
         </SignUp>
@@ -81,6 +90,7 @@ export default class Auth extends React.Component {
             email={email}
             password={password}
             updateValue={this.updateValue.bind(this)}
+            callSubmit={this.callSubmit.bind(this)}
           />
         </Login>
       )
