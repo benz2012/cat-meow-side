@@ -16,7 +16,7 @@ export function create(user, mapRef) {
   layer.resizeWorld()
 
   const text_center = center({width: 200, height: 50})
-  game.add.text(text_center.x, text_center.y-100, 'Cat Meow Side\nHow Bow Dat', {font: 'bold 32px Helvetica', fill: '#fff', align: 'center'})
+  game.add.text(text_center.x, text_center.y-100, 'Cats Meow Side\nHow Bow Dat', {font: 'bold 32px Helvetica', fill: '#fff', align: 'center'})
 
   const player_coord = center(game.cache.getImage('cat'), [12,1])
   window.player = game.add.sprite(player_coord.x, player_coord.y, 'cat')
@@ -39,7 +39,7 @@ export function create(user, mapRef) {
   game.camera.follow(window.player)
 
   // draw all other players initially
-  
+
 }
 
 function center(item, scale) {
