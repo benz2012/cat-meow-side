@@ -1,12 +1,10 @@
 import React from 'react'
-import * as firebaseui from 'firebaseui'
 
 import EntryForm from 'components/EntryForm'
 import Choice from './Choice'
 import SignUp from './SignUp'
 import Login from './Login'
 import validateAuth from './Validate'
-// console.log(validateAuth)
 import { FIREBASE_UI_CONFIG } from 'config'
 
 export default class Auth extends React.Component {
@@ -18,15 +16,6 @@ export default class Auth extends React.Component {
       password: '',
       emailValid: true,
       passwordValid: true,
-    }
-  }
-  componentWillReceiveProps(nextProps) {
-    const firebasePrev = this.props.firebase
-    const { firebase } = nextProps
-    if (!firebasePrev && firebase) {
-      // Initialize the FirebaseUI Widget using Firebase.
-      const ui = new firebaseui.auth.AuthUI(firebase.auth())
-      let currentUid = null
     }
   }
   makeChoice(e) {
@@ -51,7 +40,11 @@ export default class Auth extends React.Component {
       passwordValid: validations.password
     })
     if (validations.email && validations.password) {
-      return
+      console.log('both email and password are valid')
+      console.log('attempting to create account in firebase')
+      this.props.firebase.auth().createUserWithEmailAndPassword(email, password).catch((error) => {
+        console.log({'ERROR CODE': error.code, 'ERROR MESSAGE': error.message})
+      })
     }
   }
   chooseEntryPoint() {

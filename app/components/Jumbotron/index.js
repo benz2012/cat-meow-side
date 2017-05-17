@@ -10,7 +10,7 @@ export default function Jumbotron({children}) {
           target='_blank'
           href='https://github.com/benz2012/cat-meow-side'>
           <i className="fa fa-github" aria-hidden="true"></i>
-          &nbsp;Make it Better
+          &nbsp;Improve this Game
         </a>
       </p>
     </div>

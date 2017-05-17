@@ -28,7 +28,7 @@ export default class Home extends React.Component {
         {
           authenticated ?
           <GameContainer /> :
-          <Auth firebase= {this.state.firebase} loggedIn={this.userLoggedIn} />
+          <Auth firebase={this.state.firebase} loggedIn={this.userLoggedIn} />
         }
 
       </div>
