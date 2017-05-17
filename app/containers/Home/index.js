@@ -14,11 +14,24 @@ export default class Home extends React.Component {
       firebase: null
     }
   }
-  componentDidMount() {
-    this.setState({firebase: firebase.initializeApp(FIREBASE_CONFIG)})
+  componentWillMount() {
+    firebase.initializeApp(FIREBASE_CONFIG)
+    firebase.auth().signOut();
+    this.setState(
+      {firebase: firebase},
+      this.firebaseAuthObserver
+    )
   }
-  userLoggedIn() {
-    this.setState({authenticated: true})
+  firebaseAuthObserver() {
+    this.state.firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in
+        console.log(`user ${user.email} is signed in with a uid of ${user.uid}`)
+        this.setState({authenticated: true})
+      } else {
+        this.setState({authenticated: false})
+      }
+    })
   }
   render() {
     const { authenticated } = this.state
@@ -28,7 +41,7 @@ export default class Home extends React.Component {
         {
           authenticated ?
           <GameContainer /> :
-          <Auth firebase={this.state.firebase} loggedIn={this.userLoggedIn} />
+          <Auth firebase={this.state.firebase} />
         }
 
       </div>

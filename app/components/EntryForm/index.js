@@ -15,7 +15,7 @@ export default class EntryForm extends React.Component {
     return <p><strong className='text-danger'>invalid {label}</strong></p>
   }
   render() {
-    const { email, password, valid } = this.props
+    const { email, password, valid={email: true, password: true} } = this.props
     return (
       <div>
         <div className={this.valid(valid.email)}>

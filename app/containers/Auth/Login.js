@@ -14,7 +14,7 @@ export default class Login extends React.Component {
             <button
               type="submit"
               className="btn btn-primary"
-              onClick=''>
+              onClick={this.props.submit.bind(this)}>
               Login
             </button>
             <button

@@ -43,12 +43,22 @@ export default class Auth extends React.Component {
       console.log('both email and password are valid')
       console.log('attempting to create account in firebase')
       this.props.firebase.auth().createUserWithEmailAndPassword(email, password).catch((error) => {
-        console.log({'ERROR CODE': error.code, 'ERROR MESSAGE': error.message})
+        console.log(error)
+        alert(error.message)
       })
     }
   }
+  submitLogin() {
+    const { email, password } = this.state
+    this.props.firebase.auth().signInWithEmailAndPassword(email, password).catch((error) => {
+      console.log(error)
+      alert(error)
+      location.reload(true) // reloads the page from the server incase anthing broke
+    })
+  }
   chooseEntryPoint() {
     const { choice, email, password, emailValid, passwordValid } = this.state
+
     if (choice === 'choice-signup') {
       return (
         <SignUp
@@ -64,7 +74,9 @@ export default class Auth extends React.Component {
       )
     } else if (choice === 'choice-login') {
       return (
-        <Login cancel={this.cancel.bind(this)}>
+        <Login
+          cancel={this.cancel.bind(this)}
+          submit={this.submitLogin.bind(this)}>
           <EntryForm
             email={email}
             password={password}
