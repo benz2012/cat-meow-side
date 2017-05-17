@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.2",
+    "firebase": "^3.9.0",
+    "firebaseui": "^1.0.1",
     "phaser": "^2.6.2",
     "react": "^15.5.4",
     "react-dom": "^15.5.4"

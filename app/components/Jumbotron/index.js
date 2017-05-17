@@ -3,7 +3,7 @@ import React from 'react'
 export default function Jumbotron({children}) {
   return (
     <div className="jumbotron">
-      <h1>Cat Meow Side</h1>
+      <h1>Cats Meow Side</h1>
       <p>How Bow Dat</p>
       <p>
         <a className="btn btn-primary btn-lg"
