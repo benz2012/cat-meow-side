@@ -1,4 +1,4 @@
-export function update() {
+export function update(fireDB, uid) {
   window.player.body.setZeroVelocity();
 
   var up = window.cursors.up.isDown;
@@ -45,4 +45,10 @@ export function update() {
     window.player.animations.stop();
     window.player.frame = 1;
   }
+
+  // FIREBASE UPDATES
+  const updates = {}
+  updates['map/' + uid + '/x'] = window.player.x
+  updates['map/' + uid + '/y'] = window.player.y
+  fireDB.ref().update(updates)
 }

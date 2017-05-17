@@ -7,18 +7,26 @@ import { update } from './Update'
 import { GAME } from 'config'
 
 class Game extends Phaser.Game {
-  constructor() {
+  constructor(firebase, mapRef, user, uid) {
     super(GAME.WIDTH, GAME.HEIGHT, Phaser.AUTO, 'phaser-game', {
           preload: preload,
-          create: create,
-          update: update
+          create: () => (create(user, mapRef)),
+          update: () => (update(firebase.database(), uid))
     })
   }
 }
 
 class GameContainer extends React.Component {
   componentDidMount() {
-    window.game = new Game()
+    const { firebase, uid } = this.props
+    let user = {}
+    const userRef = firebase.database().ref('cats/' + uid)
+    const mapRef = firebase.database().ref('map/' + uid)
+    userRef.once('value').then((snapshot) => {
+      user = snapshot.val()
+      window.game = new Game(firebase, mapRef, user, uid)
+    })
+    mapRef.onDisconnect().remove()
   }
   render() {
     return (

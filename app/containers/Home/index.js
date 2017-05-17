@@ -35,7 +35,7 @@ export default class Home extends React.Component {
         view = <UserSettings firebase={this.state.firebase} uid={this.state.uid} />
         break;
       case 'GAMEPLAY':
-        view = <GameContainer />
+        view = <GameContainer firebase={this.state.firebase} uid={this.state.uid} />
         break;
       default:
         view = null
