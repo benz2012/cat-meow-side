@@ -56,20 +56,26 @@ export function update(fireDB, uid) {
   }
 
   // FIREBASE UPDATES
+  // Send this persons' cat movements to firebase
   const updates = {}
   updates['map/' + uid + '/x'] = window.player.x
   updates['map/' + uid + '/y'] = window.player.y
   fireDB.ref().update(updates)
 
+  // Update features of other cats
   Object.keys(window.actionStack).forEach((uid_) => {
-    if (uid === uid_) { return } // this is only to update the location of other cats
+    if (uid === uid_) { return }
     const userStack = window.actionStack[uid_]
     if (userStack.length > 0) {
+      // if cat update came from server since the last cycle, update cat in game
       const newestAction = userStack.pop()
+      // clear the action stack so we know when the server has stopped sending
+      // us updates for this cat
       window.actionStack[uid_] = []
-      // update cat location here
-      const { x, y } = newestAction
-      window.catSpritesOnMap[uid_].setCoord(x, y)
+      if (window.catSpritesOnMap[uid_] instanceof Cat) {
+        const { x, y } = newestAction
+        window.catSpritesOnMap[uid_].setCoord(x, y)
+      }
     }
   })
 }

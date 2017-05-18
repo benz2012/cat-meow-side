@@ -67,7 +67,6 @@ class GameContainer extends React.Component {
             window.game, fireDB, data.key,
             snapshot.val().x, snapshot.val().y
           )
-          window.dcat = cat.cat
           window.catSpritesOnMap[data.key] = cat
         })
       }
