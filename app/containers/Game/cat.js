@@ -5,9 +5,20 @@ export default class Cat {
     this.cat.bringToTop()
     fireDB.ref('cats/' + uid).once('value').then((snapshot) => {
       const cat = snapshot.val()
-      const emoji = game.add.image(0, 0, `${cat.type}_ICON`)
-      const name = game.add.text(10, -14, `${cat.name}`, {font: '11px Helvetica', fill: '#fff', align: 'center', stroke: '#000', strokeThickness: 2})
+      const name = game.add.text(
+        16, -14, `${cat.name}`,
+        {
+          font: '11px Helvetica',
+          fill: '#fff',
+          align: 'center',
+          stroke: '#000',
+          strokeThickness: 2
+        }
+      )
       name.anchor.x = Math.round(name.width * 0.5) / name.width
+      const emoji = game.add.image(
+        (name.width / 2) + 8, 2, `${cat.type}_ICON`
+      )
       emoji.anchor.x = Math.round(emoji.width * 0.5) / emoji.width
       name.addChild(emoji)
       this.cat.addChild(name)
