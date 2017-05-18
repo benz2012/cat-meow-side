@@ -51,7 +51,10 @@ export default class UserSettings extends React.Component {
           <div className='col-md-4 col-md-offset-2 col-sm-6'>
             <div className='panel panel-info'>
               <div className='panel-heading'>
-                <h3 className='panel-title'>💧&nbsp;&nbsp;Worrier Cat</h3>
+                <h3 className='panel-title'>
+                  <i className="fa fa-tint" aria-hidden="true"></i>
+                  &nbsp;&nbsp;Worrier Cat
+                </h3>
               </div>
               <div className='panel-body'>
                 <p>Attack Type: Ranged</p>
@@ -60,7 +63,10 @@ export default class UserSettings extends React.Component {
             </div>
             <div className='panel panel-success'>
               <div className='panel-heading'>
-                <h3 className='panel-title'>⚔️&nbsp;&nbsp;&nbsp;Warrior Cat</h3>
+                <h3 className='panel-title'>
+                  <i className="fa fa-shield" aria-hidden="true"></i>
+                  &nbsp;&nbsp;Warrior Cat
+                </h3>
               </div>
               <div className='panel-body'>
                 <p>Attack Type: Melee</p>

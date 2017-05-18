@@ -57,8 +57,6 @@ export default class Home extends React.Component {
             const catLiveRef = firebase.database().ref('cats/')
             catLiveRef.on('value', (snapshot) => {
               if (snapshot.val().hasOwnProperty(this.state.uid)) {
-                console.log(`user ${this.state.uid} chose the following settings: `)
-                console.log(snapshot.val()[this.state.uid])
                 this.setState({stage: 'GAMEPLAY'})
                 catLiveRef.off()
               }

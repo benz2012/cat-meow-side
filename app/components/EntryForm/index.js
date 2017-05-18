@@ -16,7 +16,6 @@ export default class EntryForm extends React.Component {
   }
   checkKey(e) {
     if (e.keyCode == 13) {
-      console.log('hit enter key from auth screen')
       this.props.callSubmit()
     }
   }

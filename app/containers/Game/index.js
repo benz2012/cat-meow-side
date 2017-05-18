@@ -4,6 +4,7 @@ import Phaser from 'phaser'
 import { preload } from './Preload'
 import { create } from './Create'
 import { update } from './Update'
+import Cat from './cat'
 import { GAME } from 'config'
 
 class Game extends Phaser.Game {
@@ -11,7 +12,7 @@ class Game extends Phaser.Game {
     super(GAME.WIDTH, GAME.HEIGHT, Phaser.AUTO, 'phaser-game', {
           preload: preload,
           create: () => (create(user, uid, fireDB)),
-          update: () => (update(fireDB, uid))
+          update: () => (update(fireDB, uid)),
     })
   }
 }
@@ -39,14 +40,6 @@ class GameContainer extends React.Component {
       })
     })
 
-    // watch for cats joining or leavin the game
-    globalMapRef.on('child_added', (data) => {
-      window.actionStack[data.key] = []
-    })
-    globalMapRef.on('child_removed', (data) => {
-      return
-    })
-
     // watch for changes from cats (ie movements or attacks)
     globalMapRef.on('child_changed', (data) => {
       window.actionStack[data.key].push(data.val())
@@ -62,6 +55,31 @@ class GameContainer extends React.Component {
       window.game = new Game(fireDB, user, uid)
     })
     mapRef.onDisconnect().remove()
+
+    // watch for cats joining or leavin the game
+    let ignoreInitial = true
+    globalMapRef.on('child_added', (data) => {
+      if (data.key === uid) { return } // don't re-render ourself
+      if (!ignoreInitial) {
+        window.actionStack[data.key] = []
+        fireDB.ref('cats/' + data.key).once('value').then((snapshot) => {
+          const cat = new Cat(
+            window.game, fireDB, data.key,
+            snapshot.val().x, snapshot.val().y
+          )
+          window.dcat = cat.cat
+          window.catSpritesOnMap[data.key] = cat
+        })
+      }
+    })
+    globalMapRef.once('value').then((snapshot) => {
+      ignoreInitial = false
+    })
+    globalMapRef.on('child_removed', (data) => {
+      delete window.actionStack[data.key]
+      window.catSpritesOnMap[data.key].destroy()
+      delete window.catSpritesOnMap[data.key]
+    })
   }
   render() {
     return (

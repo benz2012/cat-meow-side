@@ -56,12 +56,15 @@ export function update(fireDB, uid) {
   updates['map/' + uid + '/y'] = window.player.y
   fireDB.ref().update(updates)
 
-  Object.keys(window.actionStack).forEach((uid) => {
-    const userStack = window.actionStack[uid]
+  Object.keys(window.actionStack).forEach((uid_) => {
+    if (uid === uid_) { return } // this is only to update the location of other cats
+    const userStack = window.actionStack[uid_]
     if (userStack.length > 0) {
       const newestAction = userStack.pop()
-      window.actionStack[uid] = []
+      window.actionStack[uid_] = []
       // update cat location here
+      const { x, y } = newestAction
+      window.catSpritesOnMap[uid_].setCoord(x, y)
     }
   })
 }
