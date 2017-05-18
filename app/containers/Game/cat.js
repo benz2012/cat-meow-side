@@ -1,10 +1,10 @@
 export default class Cat {
   constructor(game, fireDB, uid, x, y) {
     // console.log('adding cat for: ' + uid)
-    this.cat = game.add.sprite(x, y, 'cat', 1)
-    this.cat.bringToTop()
     fireDB.ref('cats/' + uid).once('value').then((snapshot) => {
       const cat = snapshot.val()
+      this.cat = game.add.sprite(x, y, `${cat.color}_CAT`, 1)
+      this.cat.bringToTop()
       const name = game.add.text(
         16, -14, `${cat.name}`,
         {
