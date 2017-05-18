@@ -2,8 +2,9 @@ import Phaser from 'phaser'
 
 import Cat from './cat'
 
-window.cursors;
-window.player;
+window.cursors
+window.keys
+window.player
 
 import { GAME } from 'config'
 
@@ -44,6 +45,7 @@ export function create(user, uid, fireDB) {
 
   game.physics.p2.setBoundsToWorld(true, true, true, true, false)
   window.cursors = game.input.keyboard.createCursorKeys()
+  window.keys =
   game.camera.follow(window.player)
 
   // create opponent cats
