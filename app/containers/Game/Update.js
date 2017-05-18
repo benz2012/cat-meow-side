@@ -47,7 +47,6 @@ export function update(fireDB, uid) {
   if (!(up || down || left || right)) {
     // no cursors are active
     window.player.animations.stop()
-    window.player.frame = 1
   }
 
   // FIREBASE UPDATES
