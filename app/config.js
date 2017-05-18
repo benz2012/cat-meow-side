@@ -25,6 +25,10 @@ GAME.CAT.COLOR = Object.freeze({
   ORANGE: 5,
   BLACK: 6,
 })
+GAME.CAT.SPEED = Object.freeze({
+  STRAIGHT: 300,
+  DIAGONAL: 212,
+})
 
 /*
 * FIREBASE CONFIG

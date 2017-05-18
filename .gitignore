@@ -5,3 +5,6 @@ design
 # named files
 .DS_Store
 npm-debug.log
+server.crt
+server.csr
+server.key
