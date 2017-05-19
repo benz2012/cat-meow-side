@@ -19,10 +19,7 @@ export default class Home extends React.Component {
   componentWillMount() {
     firebase.initializeApp(FIREBASE_CONFIG)
     firebase.auth().signOut();
-    this.setState(
-      {firebase: firebase},
-      this.observer
-    )
+    this.setState({firebase: firebase}, this.observer)
   }
   stageView() {
     const { stage } = this.state
