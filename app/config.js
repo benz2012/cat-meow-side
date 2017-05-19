@@ -30,6 +30,13 @@ GAME.CAT.SPEED = Object.freeze({
   DIAGONAL: 212,
 })
 
+GAME.CAT.DIRECTION = Object.freeze({
+  EAST: 0,
+  NORTH: 1,
+  WEST: 2,
+  SOUTH: 3
+})
+
 // GAME.RENDER = Object.freeze({
 //   CHROME: 'WEBGL',
 //   FIREFOX: 'CANVAS',

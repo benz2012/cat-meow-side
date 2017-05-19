@@ -66,15 +66,22 @@ export function update(fireDB, uid) {
   Object.keys(window.actionStack).forEach((uid_) => {
     if (uid === uid_) { return }
     const userStack = window.actionStack[uid_]
-    if (userStack.length > 0) {
-      // if cat update came from server since the last cycle, update cat in game
-      const newestAction = userStack.pop()
-      // clear the action stack so we know when the server has stopped sending
-      // us updates for this cat
-      window.actionStack[uid_] = []
-      if (window.catSpritesOnMap[uid_] instanceof Cat) {
+    if (window.catSpritesOnMap[uid_] instanceof Cat) {
+      if (userStack.length > 0) {
+        // if cat update came from server since the last cycle, update cat in game
+        const newestAction = userStack.pop()
+        // clear the action stack so we know when the server has stopped sending
+        // us updates for this cat
+        window.actionStack[uid_] = []
         const { x, y } = newestAction
         window.catSpritesOnMap[uid_].setCoord(x, y)
+      } else {
+        // if no cat updates from server, stop its sprite animation
+        if (window.catSpritesOnMap[uid_].cat) {
+          if (window.catSpritesOnMap[uid_].cat.animations) {
+            window.catSpritesOnMap[uid_].cat.animations.stop()
+          }
+        }
       }
     }
   })
