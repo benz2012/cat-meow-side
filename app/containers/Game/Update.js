@@ -5,44 +5,51 @@ import { GAME } from 'config'
 export function update(fireDB, uid) {
   window.player.body.setZeroVelocity()
 
+  window.player.body.x = window.currentCatLocation.x
+  window.player.body.y = window.currentCatLocation.y
+  // console.log(window.currentCatLocation)
+
   const up = window.cursors.up.isDown
   const down = window.cursors.down.isDown
   const left = window.cursors.left.isDown
   const right = window.cursors.right.isDown
   const spacebar = window.keys.spacebar.isDown
 
-  const straight = GAME.CAT.SPEED.STRAIGHT
-  const diagonal = GAME.CAT.SPEED.DIAGONAL
+  // const straight = GAME.CAT.SPEED.STRAIGHT
+  // const diagonal = GAME.CAT.SPEED.DIAGONAL
+  const straight = 5
+  const diagonal = 3.5355
 
   if (up && !(left || right)) {
-    window.player.body.moveUp(straight)
+    // moveUp(window.player, straight)
+    // window.player.y += straight
     window.player.animations.play('up')
   } else if (up && left) {
-    window.player.body.moveUp(diagonal)
-    window.player.body.moveLeft(diagonal)
+    // moveUp(window.player, diagonal)
+    // moveLeft(window.player, diagonal)
     window.player.animations.play('left')
   } else if (up && right) {
-    window.player.body.moveUp(diagonal)
-    window.player.body.moveRight(diagonal)
+    // moveUp(window.player, diagonal)
+    // moveRight(window.player, diagonal)
     window.player.animations.play('right')
   } else if (down && !(left || right)) {
-    window.player.body.moveDown(straight)
+    // moveDown(window.player, straight)
     window.player.animations.play('down')
   } else if (down && left){
-    window.player.body.moveDown(diagonal)
-    window.player.body.moveLeft(diagonal)
+    // moveDown(window.player, diagonal)
+    // moveLeft(window.player, diagonal)
     window.player.animations.play('left')
   } else if (down && right) {
-    window.player.body.moveDown(diagonal)
-    window.player.body.moveRight(diagonal)
+    // moveDown(window.player, diagonal)
+    // moveRight(window.player, diagonal)
     window.player.animations.play('right')
   }
 
   if (left && !(up || down)) {
-    window.player.body.moveLeft(straight)
+    // moveLeft(window.player, straight)
     window.player.animations.play('left')
   } else if (right && !(up || down)) {
-    window.player.body.moveRight(straight)
+    // moveRight(window.player, straight)
     window.player.animations.play('right')
   }
 
@@ -75,7 +82,22 @@ export function update(fireDB, uid) {
       if (window.catSpritesOnMap[uid_] instanceof Cat) {
         const { x, y } = newestAction
         window.catSpritesOnMap[uid_].setCoord(x, y)
+        const d = new Date()
+        // console.log(d.getTime(), window.catSpritesOnMap[uid_].cat.x)
       }
     }
   })
+}
+
+function moveDown(sprite, distance) {
+  sprite.body.y += distance
+}
+function moveUp(sprite, distance) {
+  moveDown(sprite, -distance)
+}
+function moveRight(sprite, distance) {
+  sprite.body.x += distance
+}
+function moveLeft(sprite, distance) {
+  moveRight(sprite, -distance)
 }

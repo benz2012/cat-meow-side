@@ -22,6 +22,7 @@ export function create(user, uid, fireDB) {
   window.player = game.add.sprite(0, 0, `${user.color}_CAT`)
   const player_coord = center(window.player, [12,1])
   window.player.x = player_coord.x; window.player.y = player_coord.y;
+  window.currentCatLocation = {x: window.player.x, y: window.player.y}
   game.physics.p2.enable(window.player)
   window.player.body.fixedRotation = true;
   fireDB.ref('map/' + uid).set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})
