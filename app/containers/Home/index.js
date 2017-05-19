@@ -19,10 +19,7 @@ export default class Home extends React.Component {
   componentWillMount() {
     firebase.initializeApp(FIREBASE_CONFIG)
     firebase.auth().signOut();
-    this.setState(
-      {firebase: firebase},
-      this.observer
-    )
+    this.setState({firebase: firebase}, this.observer)
   }
   stageView() {
     const { stage } = this.state
@@ -47,6 +44,14 @@ export default class Home extends React.Component {
     this.state.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in
+        firebase.database().ref('active').once('value').then((snapshot) => {
+          // only allow a user to have one active sign in
+          if (snapshot.val() && snapshot.val().hasOwnProperty(user.uid)) {
+            alert('This account is signed in somewhere else')
+            location.reload(true)
+          }
+        })
+
         this.setState({uid: user.uid})
         console.log(`user ${user.email} is signed in with a uid of ${this.state.uid}`)
 
