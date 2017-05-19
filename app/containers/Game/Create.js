@@ -19,9 +19,7 @@ export function create(user, uid, fireDB) {
   const text_center = center({width: 200, height: 50})
   game.add.text(text_center.x, text_center.y-100, 'Cats Meow Side\nHow Bow Dat', {font: 'bold 32px Helvetica', fill: '#fff', align: 'center'})
 
-  window.player = game.add.sprite(0, 0, `${user.color}_CAT`)
-  const player_coord = center(window.player, [12,1])
-  window.player.x = player_coord.x; window.player.y = player_coord.y;
+  window.player = game.add.sprite(game.world.centerX, game.world.centerY, `${user.color}_CAT`)
   game.physics.p2.enable(window.player)
   window.player.body.fixedRotation = true;
   fireDB.ref('map/' + uid).set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})

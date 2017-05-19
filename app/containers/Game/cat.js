@@ -5,9 +5,11 @@ export default class Cat {
     fireDB.ref('cats/' + uid).once('value').then((snapshot) => {
       const catSettings = snapshot.val()
       this.cat = game.add.sprite(x, y, `${catSettings.color}_CAT`, 1)
+      this.cat.anchor.x = 0.5
+      this.cat.anchor.y = 0.5
       this.cat.bringToTop()
       const name = game.add.text(
-        16, -14, `${catSettings.name}`,
+        0, -30, `${catSettings.name}`,
         {
           font: '11px Helvetica',
           fill: '#fff',

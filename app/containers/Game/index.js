@@ -62,13 +62,8 @@ class GameContainer extends React.Component {
       if (data.key === uid) { return } // don't re-render ourself
       if (!ignoreInitial) {
         window.actionStack[data.key] = []
-        fireDB.ref('cats/' + data.key).once('value').then((snapshot) => {
-          const cat = new Cat(
-            window.game, fireDB, data.key,
-            snapshot.val().x, snapshot.val().y
-          )
-          window.catSpritesOnMap[data.key] = cat
-        })
+        const cat = new Cat(window.game, fireDB, data.key, data.val().x, data.val().y)
+        window.catSpritesOnMap[data.key] = cat
       }
     })
     globalMapRef.once('value').then((snapshot) => {
