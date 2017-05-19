@@ -48,27 +48,27 @@ export default class Home extends React.Component {
           // only allow a user to have one active sign in
           if (snapshot.val() && snapshot.val().hasOwnProperty(user.uid)) {
             alert('This account is signed in somewhere else')
-            location.reload(true)
-          }
-        })
+            this.setState({stage: 'AUTHENTICATION'})
+          } else {
+            this.setState({uid: user.uid})
+            console.log(`user ${user.email} is signed in with a uid of ${this.state.uid}`)
 
-        this.setState({uid: user.uid})
-        console.log(`user ${user.email} is signed in with a uid of ${this.state.uid}`)
-
-        firebase.database().ref('cats/').once('value').then((snapshot) => {
-          const catSettings = snapshot.val()[this.state.uid]
-          if (!catSettings) {
-            this.setState({stage: 'SETTINGS'})
-            const catLiveRef = firebase.database().ref('cats/')
-            catLiveRef.on('value', (snapshot) => {
-              if (snapshot.val().hasOwnProperty(this.state.uid)) {
+            firebase.database().ref('cats/').once('value').then((snapshot) => {
+              const catSettings = snapshot.val()[this.state.uid]
+              if (!catSettings) {
+                this.setState({stage: 'SETTINGS'})
+                const catLiveRef = firebase.database().ref('cats/')
+                catLiveRef.on('value', (snapshot) => {
+                  if (snapshot.val().hasOwnProperty(this.state.uid)) {
+                    this.setState({stage: 'GAMEPLAY'})
+                    catLiveRef.off()
+                  }
+                })
+              } else {
+                // setting have already been set
                 this.setState({stage: 'GAMEPLAY'})
-                catLiveRef.off()
               }
             })
-          } else {
-            // setting have already been set
-            this.setState({stage: 'GAMEPLAY'})
           }
         })
       } else {
