@@ -30,6 +30,12 @@ GAME.CAT.SPEED = Object.freeze({
   DIAGONAL: 212,
 })
 
+// GAME.RENDER = Object.freeze({
+//   CHROME: 'WEBGL',
+//   FIREFOX: 'CANVAS',
+//   SAFARI: 'CANVAS',
+// })
+
 /*
 * FIREBASE CONFIG
 */
