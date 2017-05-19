@@ -18,6 +18,11 @@ class Game extends Phaser.Game {
 }
 
 class GameContainer extends React.Component {
+  componentWillMount() {
+    const { firebase, uid } = this.props
+    const fireDB = firebase.database()
+    fireDB.ref('active/' + uid).set(true)
+  }
   componentDidMount() {
     const { firebase, uid } = this.props
     const fireDB = firebase.database()
@@ -74,6 +79,8 @@ class GameContainer extends React.Component {
       window.catSpritesOnMap[data.key].destroy()
       delete window.catSpritesOnMap[data.key]
     })
+
+    fireDB.ref('active/' + uid).onDisconnect().remove()
   }
   render() {
     return (
