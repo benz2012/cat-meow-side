@@ -1,5 +1,6 @@
 import React from 'react'
 import * as firebase from 'firebase'
+import Browser from 'detect-browser'
 
 import Auth from 'containers/Auth'
 import GameContainer from 'containers/Game'

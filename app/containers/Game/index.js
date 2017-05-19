@@ -9,7 +9,7 @@ import { GAME } from 'config'
 
 class Game extends Phaser.Game {
   constructor(fireDB, user, uid) {
-    super(GAME.WIDTH, GAME.HEIGHT, Phaser.AUTO, 'phaser-game', {
+    super(GAME.WIDTH, GAME.HEIGHT, Phaser.CANVAS, 'phaser-game', {
           preload: preload,
           create: () => (create(user, uid, fireDB)),
           update: () => (update(fireDB, uid)),

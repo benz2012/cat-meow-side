@@ -10,6 +10,7 @@
   "author": "Ben Zenker",
   "license": "ISC",
   "dependencies": {
+    "detect-browser": "^1.7.0",
     "express": "^4.15.2",
     "firebase": "^3.9.0",
     "phaser": "^2.6.2",
