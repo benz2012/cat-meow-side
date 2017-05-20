@@ -13,26 +13,44 @@ export default class Home extends React.Component {
     this.state = {
       stage: null,
       firebase: null,
-      uid: null
+      uid: null,
+      highlights: null,
     }
   }
   componentWillMount() {
     firebase.initializeApp(FIREBASE_CONFIG)
     firebase.auth().signOut();
     this.setState({firebase: firebase}, this.observer)
+    this.fetchHighlights()
+  }
+  fetchHighlights() {
+    const url = 'https://api.github.com/repos/benz2012/cat-meow-side/issues?'
+    const params = {
+      state: 'closed',
+      labels: 'show_public',
+    }
+    const esc = encodeURIComponent
+    const query = Object.keys(params)
+      .map(k => `${esc(k)}=${esc(params[k])}`)
+      .join('&')
+    fetch(url.concat(query)).then(res => {
+      return res.json()
+    }).then(json => {
+      this.setState({highlights: json})
+    })
   }
   stageView() {
-    const { stage } = this.state
+    const { stage, firebase, uid, highlights } = this.state
     let view = null
     switch (stage) {
       case 'AUTHENTICATION':
-        view = <Auth firebase={this.state.firebase} />
+        view = <Auth firebase={firebase} highlights={highlights} />
         break
       case 'SETTINGS':
-        view = <UserSettings firebase={this.state.firebase} uid={this.state.uid} />
+        view = <UserSettings firebase={firebase} uid={uid} />
         break;
       case 'GAMEPLAY':
-        view = <GameContainer firebase={this.state.firebase} uid={this.state.uid} />
+        view = <GameContainer firebase={firebase} uid={uid} />
         break;
       default:
         view = null

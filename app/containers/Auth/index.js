@@ -96,7 +96,8 @@ export default class Auth extends React.Component {
       )
     } else {
       return (
-        <Choice makeChoice={this.makeChoice.bind(this)} />
+        <Choice makeChoice={this.makeChoice.bind(this)}
+          highlights={this.props.highlights} />
       )
     }
   }
