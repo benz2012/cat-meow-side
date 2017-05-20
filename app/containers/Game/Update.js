@@ -52,7 +52,8 @@ export function update(fireDB, uid) {
   }
 
   if (spacebar) {
-    console.log('spacebar')
+    // console.log('spacebar')
+    // window.weapon.fire()
   }
 
   // FIREBASE UPDATES
