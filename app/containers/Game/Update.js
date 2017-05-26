@@ -94,7 +94,10 @@ export function update(fireDB, uid) {
     if (userStack.length > 0) {
       const newestAction = userStack.pop()
       window.actionStack[uid] = []
-      console.log('health: ', newestAction.hp_now)
+      if (newestAction.hp_now === 0) {
+        window.player.kill()
+        // launch modal
+      }
     }
   }
 
@@ -111,6 +114,9 @@ export function update(fireDB, uid) {
         window.actionStack[uid_] = []
         const { x, y } = newestAction
         window.catSpritesOnMap[uid_].setCoord(x, y)
+        if (newestAction.hp_now === 0) {
+          window.catSpritesOnMap[uid_].cat.kill()
+        }
       } else {
         // if no cat updates from server, stop its sprite animation
         if (window.catSpritesOnMap[uid_].cat) {
