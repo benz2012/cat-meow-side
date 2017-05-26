@@ -1,5 +1,6 @@
-import Cat from './cat'
+import Phaser from 'phaser'
 
+import Cat from './cat'
 import { GAME } from 'config'
 
 export function update(fireDB, uid) {
@@ -59,12 +60,43 @@ export function update(fireDB, uid) {
     window.player.animations.stop()
   }
 
+  // COLISSION CHECKS
+  Object.keys(window.catSpritesOnMap).forEach(key => {
+    const otherCat = window.catSpritesOnMap[key]
+    // skip if either cat doesn't exist
+    if (!(otherCat && otherCat.cat)) { return }
+    if (typeof otherCat.cat.getBounds === 'function') {
+      if (window.weapon) {
+        if (window.weapon.bullets) {
+          if (window.weapon.bullets.children) {
+            window.weapon.bullets.children.forEach(bullet => {
+              if (bullet.alive) {
+                if (checkOverlap(bullet, otherCat.cat)) {
+                  bullet.kill()
+                  hurt(fireDB, key)
+                }
+              }
+            })
+          }
+        }
+      }
+    }
+  })
+
   // FIREBASE UPDATES
   // Send this persons' cat movements to firebase
   const updates = {}
   updates['map/' + uid + '/x'] = window.player.x
   updates['map/' + uid + '/y'] = window.player.y
   fireDB.ref().update(updates)
+  if (window.actionStack[uid]) {
+    const userStack = window.actionStack[uid]
+    if (userStack.length > 0) {
+      const newestAction = userStack.pop()
+      window.actionStack[uid] = []
+      console.log('health: ', newestAction.hp_now)
+    }
+  }
 
   // Update features of other cats
   Object.keys(window.actionStack).forEach((uid_) => {
@@ -89,4 +121,21 @@ export function update(fireDB, uid) {
       }
     }
   })
+}
+
+function checkOverlap(spriteA, spriteB) {
+  const boundsA = spriteA.getBounds()
+  const boundsB = spriteB.getBounds()
+  return Phaser.Rectangle.intersects(boundsA, boundsB)
+}
+
+function hurt(fireDB, catId) {
+  fireDB.ref('map/' + catId).transaction((cat) => {
+    if (cat) {
+      if (cat.hp_now) {
+        cat.hp_now -= 1
+      }
+    }
+    return cat
+  });
 }

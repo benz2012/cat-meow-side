@@ -22,7 +22,7 @@ export function create(user, uid, fireDB) {
 
   window.player = window.game.add.sprite(window.game.world.centerX, window.game.world.centerY, `${user.color}_CAT`)
   window.game.physics.p2.enable(window.player)
-  window.player.body.fixedRotation = true;
+  window.player.body.fixedRotation = true
   window.player.orientation = GAME.CAT.DIRECTION.SOUTH
   const catType = getKeyByValue(GAME.CAT.TYPE, user.type)
   fireDB.ref('map/' + uid).set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})
@@ -44,7 +44,7 @@ export function create(user, uid, fireDB) {
   name.addChild(emoji)
   window.player.addChild(name)
 
-  window.weapon = window.game.add.weapon(40, `${user.type}_WEAPON`)
+  window.weapon = window.game.add.weapon(2, `${user.type}_WEAPON`)
   window.weapon.bulletKillType = Phaser.Weapon.KILL_DISTANCE
   window.weapon.bulletKillDistance = GAME.CAT.WEAPON_DISTANCE[catType]
   window.weapon.bulletSpeed = 800
@@ -59,10 +59,7 @@ export function create(user, uid, fireDB) {
   window.weapon.onFire.add((bullet, weapon) => {
     const newDate = new Date()
     const millisecond = newDate.getTime()
-    weaponRef.set({
-      x: weapon.x, y: weapon.y,
-      angle: weapon.fireAngle, when: millisecond
-    })
+    weaponRef.set({angle: weapon.fireAngle, when: millisecond})
   })
   window.keys.spacebar.onDown.add(() => {
     window.weapon.fireAngle = 360 - (window.player.orientation * 90)
@@ -76,6 +73,7 @@ export function create(user, uid, fireDB) {
     const cat = new Cat(window.game, fireDB, catId, x, y)
     window.catSpritesOnMap[catId] = cat
   })
+  window.player.body.onBeginContact.add(() => console.log('something hit'), this)
 }
 
 function center(item, scale) {

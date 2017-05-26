@@ -8,6 +8,8 @@ export default class Cat {
     fireDB.ref('cats/' + uid).once('value').then((snapshot) => {
       const catSettings = snapshot.val()
       this.cat = game.add.sprite(x, y, `${catSettings.color}_CAT`, 1)
+      // window.game.physics.p2.enable(this.cat)
+      // this.cat.body.fixedRotation = true
       this.prev = {x: this.cat.x, y: this.cat.y}
       this.cat.anchor.x = 0.5
       this.cat.anchor.y = 0.5
