@@ -1,13 +1,13 @@
 import Phaser from 'phaser'
 
 import Cat from './cat'
+import { getKeyByValue } from 'utils/objectUtils'
+import { GAME } from 'config'
 
 window.cursors
 window.keys = {}
 window.player
 window.weapon
-
-import { GAME } from 'config'
 
 export function create(user, uid, fireDB) {
   window.game.physics.startSystem(Phaser.Physics.P2JS)
@@ -24,6 +24,7 @@ export function create(user, uid, fireDB) {
   window.game.physics.p2.enable(window.player)
   window.player.body.fixedRotation = true;
   window.player.orientation = GAME.CAT.DIRECTION.SOUTH
+  const catType = getKeyByValue(GAME.CAT.TYPE, user.type)
   fireDB.ref('map/' + uid).set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})
 
   window.player.animations.add('left', [3, 4, 5], 10, true)
@@ -45,18 +46,18 @@ export function create(user, uid, fireDB) {
 
   window.weapon = window.game.add.weapon(40, `${user.type}_WEAPON`)
   window.weapon.bulletKillType = Phaser.Weapon.KILL_DISTANCE
-  window.weapon.bulletKillDistance = 300 // pixels
+  window.weapon.bulletKillDistance = GAME.CAT.WEAPON_DISTANCE[catType]
   window.weapon.bulletSpeed = 800
   window.weapon.trackSprite(window.player, 0, 0, false)
-  // window.weapon.onFire.add((bullet, weapon) => {
-  //   firebase: send weapon.x, weapon.y, weapon.fireAngle
-  // })
 
   window.game.physics.p2.setBoundsToWorld(true, true, true, true, false)
   window.cursors = window.game.input.keyboard.createCursorKeys()
   window.keys.spacebar = window.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR)
   window.game.camera.follow(window.player)
 
+  // window.weapon.onFire.add((bullet, weapon) => {
+  //   firebase: send weapon.x, weapon.y, weapon.fireAngle
+  // })
   window.keys.spacebar.onDown.add(() => {
     window.weapon.fireAngle = 360 - (window.player.orientation * 90)
     window.weapon.fire()
