@@ -48,7 +48,6 @@ class GameContainer extends React.Component {
     // watch for changes from cats (ie movements or attacks)
     globalMapRef.on('child_changed', (data) => {
       window.actionStack[data.key].push(data.val())
-      // console.log(window.actionStack)
     })
 
     // build and run the game
@@ -78,6 +77,21 @@ class GameContainer extends React.Component {
       delete window.actionStack[data.key]
       window.catSpritesOnMap[data.key].cat.destroy()
       delete window.catSpritesOnMap[data.key]
+    })
+
+    // watch for weapons fired by other cats
+    const globalWeaponRef = fireDB.ref('weapon')
+    let ignoreInitialWeapon = true
+    globalWeaponRef.on('child_added', (data) => {
+      if (data.key === uid) { return } // ignore own cats weapons
+      if (!ignoreInitialWeapon) {
+        console.log(data.key, data.val())
+      }
+    })
+    globalWeaponRef.once('value').then(() => { ignoreInitialWeapon = false })
+    globalWeaponRef.on('child_changed', (data) => {
+      if (data.key === uid) { return } // ignore own cats weapons
+      console.log(data.key, data.val())
     })
 
     fireDB.ref('active/' + uid).onDisconnect().remove()

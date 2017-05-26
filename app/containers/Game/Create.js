@@ -57,7 +57,12 @@ export function create(user, uid, fireDB) {
 
   const weaponRef = fireDB.ref('weapon/' + uid)
   window.weapon.onFire.add((bullet, weapon) => {
-    weaponRef.set({x: weapon.x, y: weapon.y, angle: weapon.fireAngle})
+    const newDate = new Date()
+    const millisecond = newDate.getTime()
+    weaponRef.set({
+      x: weapon.x, y: weapon.y,
+      angle: weapon.fireAngle, when: millisecond
+    })
   })
   window.keys.spacebar.onDown.add(() => {
     window.weapon.fireAngle = 360 - (window.player.orientation * 90)
