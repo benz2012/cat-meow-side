@@ -81,6 +81,7 @@ class GameContainer extends React.Component {
     })
 
     fireDB.ref('active/' + uid).onDisconnect().remove()
+    fireDB.ref('weapon/' + uid).onDisconnect().remove()
   }
   render() {
     return (

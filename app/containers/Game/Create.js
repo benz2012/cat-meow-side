@@ -55,9 +55,10 @@ export function create(user, uid, fireDB) {
   window.keys.spacebar = window.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR)
   window.game.camera.follow(window.player)
 
-  // window.weapon.onFire.add((bullet, weapon) => {
-  //   firebase: send weapon.x, weapon.y, weapon.fireAngle
-  // })
+  const weaponRef = fireDB.ref('weapon/' + uid)
+  window.weapon.onFire.add((bullet, weapon) => {
+    weaponRef.set({x: weapon.x, y: weapon.y, angle: weapon.fireAngle})
+  })
   window.keys.spacebar.onDown.add(() => {
     window.weapon.fireAngle = 360 - (window.player.orientation * 90)
     window.weapon.fire()
