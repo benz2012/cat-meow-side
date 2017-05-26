@@ -1,3 +1,4 @@
+import { getKeyByValue } from 'utils/objectUtils'
 import { GAME } from 'config'
 
 export default class Cat {
@@ -33,6 +34,14 @@ export default class Cat {
       emoji.anchor.x = Math.round(emoji.width * 0.5) / emoji.width
       name.addChild(emoji)
       this.cat.addChild(name)
+
+      // weapon
+      this.weapon = window.game.add.weapon(40, `${catSettings.type}_WEAPON`)
+      const catType = getKeyByValue(GAME.CAT.TYPE, catSettings.type)
+      this.weapon.bulletKillType = Phaser.Weapon.KILL_DISTANCE
+      this.weapon.bulletKillDistance = GAME.CAT.WEAPON_DISTANCE[catType]
+      this.weapon.bulletSpeed = 800
+      this.weapon.trackSprite(this.cat, 0, 0, false)
     })
   }
   setCoord(x, y) {
@@ -57,6 +66,12 @@ export default class Cat {
       this.cat.x = x
       this.cat.y = y
       this.prev = {x: x, y: y}
+    }
+  }
+  fireWeapon(fireAngle) {
+    if (this.weapon) {
+      this.weapon.fireAngle = fireAngle
+      this.weapon.fire()
     }
   }
   destroy() {

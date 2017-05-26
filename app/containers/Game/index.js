@@ -85,14 +85,23 @@ class GameContainer extends React.Component {
     globalWeaponRef.on('child_added', (data) => {
       if (data.key === uid) { return } // ignore own cats weapons
       if (!ignoreInitialWeapon) {
-        console.log(data.key, data.val())
+        fireFromCat(data)
       }
     })
     globalWeaponRef.once('value').then(() => { ignoreInitialWeapon = false })
     globalWeaponRef.on('child_changed', (data) => {
       if (data.key === uid) { return } // ignore own cats weapons
-      console.log(data.key, data.val())
+      fireFromCat(data)
     })
+    function fireFromCat(data) {
+      const uid_ = data.key
+      const weaponInfo = data.val()
+      if (window.catSpritesOnMap[uid_] instanceof Cat) {
+        if (window.catSpritesOnMap[uid_].weapon) {
+          window.catSpritesOnMap[uid_].fireWeapon(weaponInfo.angle)
+        }
+      }
+    }
 
     fireDB.ref('active/' + uid).onDisconnect().remove()
     fireDB.ref('weapon/' + uid).onDisconnect().remove()
