@@ -35,7 +35,7 @@ class GameContainer extends React.Component {
 
     // build initial object of cats on the map
     const globalMapRef = fireDB.ref('map')
-    const globalCatsRef = fireDB.ref('cats')
+    // const globalCatsRef = fireDB.ref('cats')
     globalMapRef.once('value').then((snapshot) => {
       const currentCatsOnMap = snapshot.val()
       if (!currentCatsOnMap) { return }
@@ -76,7 +76,7 @@ class GameContainer extends React.Component {
     })
     globalMapRef.on('child_removed', (data) => {
       delete window.actionStack[data.key]
-      window.catSpritesOnMap[data.key].destroy()
+      window.catSpritesOnMap[data.key].cat.destroy()
       delete window.catSpritesOnMap[data.key]
     })
 

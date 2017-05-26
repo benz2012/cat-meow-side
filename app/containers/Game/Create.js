@@ -23,6 +23,7 @@ export function create(user, uid, fireDB) {
   window.player = window.game.add.sprite(window.game.world.centerX, window.game.world.centerY, `${user.color}_CAT`)
   window.game.physics.p2.enable(window.player)
   window.player.body.fixedRotation = true;
+  window.player.orientation = GAME.CAT.DIRECTION.SOUTH
   fireDB.ref('map/' + uid).set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})
 
   window.player.animations.add('left', [3, 4, 5], 10, true)
@@ -43,18 +44,23 @@ export function create(user, uid, fireDB) {
   window.player.addChild(name)
 
   window.weapon = window.game.add.weapon(40, `${user.type}_WEAPON`)
-  window.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
-  window.weapon.bulletSpeed = 400
-  // window.weapon.fireRate = 1000
-  window.weapon.trackSprite(window.player, 0, 0, true)
-
+  window.weapon.bulletKillType = Phaser.Weapon.KILL_DISTANCE
+  window.weapon.bulletKillDistance = 300 // pixels
+  window.weapon.bulletSpeed = 800
+  window.weapon.trackSprite(window.player, 0, 0, false)
+  // window.weapon.onFire.add((bullet, weapon) => {
+  //   firebase: send weapon.x, weapon.y, weapon.fireAngle
+  // })
 
   window.game.physics.p2.setBoundsToWorld(true, true, true, true, false)
   window.cursors = window.game.input.keyboard.createCursorKeys()
   window.keys.spacebar = window.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR)
   window.game.camera.follow(window.player)
 
-  window.keys.spacebar.onDown.add(() => window.weapon.fire(), this)
+  window.keys.spacebar.onDown.add(() => {
+    window.weapon.fireAngle = 360 - (window.player.orientation * 90)
+    window.weapon.fire()
+  }, this)
 
   // create opponent cats
   Object.keys(window.catsOnMap).forEach((catId) => {
@@ -63,7 +69,6 @@ export function create(user, uid, fireDB) {
     const cat = new Cat(window.game, fireDB, catId, x, y)
     window.catSpritesOnMap[catId] = cat
   })
-
 }
 
 function center(item, scale) {

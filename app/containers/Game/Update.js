@@ -17,43 +17,46 @@ export function update(fireDB, uid) {
   if (up && !(left || right)) {
     window.player.body.moveUp(straight)
     window.player.animations.play('up')
+    window.player.orientation = GAME.CAT.DIRECTION.NORTH
   } else if (up && left) {
     window.player.body.moveUp(diagonal)
     window.player.body.moveLeft(diagonal)
     window.player.animations.play('left')
+    window.player.orientation = GAME.CAT.DIRECTION.WEST
   } else if (up && right) {
     window.player.body.moveUp(diagonal)
     window.player.body.moveRight(diagonal)
     window.player.animations.play('right')
+    window.player.orientation = GAME.CAT.DIRECTION.EAST
   } else if (down && !(left || right)) {
     window.player.body.moveDown(straight)
     window.player.animations.play('down')
+    window.player.orientation = GAME.CAT.DIRECTION.SOUTH
   } else if (down && left){
     window.player.body.moveDown(diagonal)
     window.player.body.moveLeft(diagonal)
     window.player.animations.play('left')
+    window.player.orientation = GAME.CAT.DIRECTION.WEST
   } else if (down && right) {
     window.player.body.moveDown(diagonal)
     window.player.body.moveRight(diagonal)
     window.player.animations.play('right')
+    window.player.orientation = GAME.CAT.DIRECTION.EAST
   }
 
   if (left && !(up || down)) {
     window.player.body.moveLeft(straight)
     window.player.animations.play('left')
+    window.player.orientation = GAME.CAT.DIRECTION.WEST
   } else if (right && !(up || down)) {
     window.player.body.moveRight(straight)
     window.player.animations.play('right')
+    window.player.orientation = GAME.CAT.DIRECTION.EAST
   }
 
   if (!(up || down || left || right)) {
     // no cursors are active
     window.player.animations.stop()
-  }
-
-  if (spacebar) {
-    // console.log('spacebar')
-    // window.weapon.fire()
   }
 
   // FIREBASE UPDATES
