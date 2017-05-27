@@ -43,6 +43,12 @@ export function create(user, uid, fireDB) {
   emoji.anchor.x = Math.round(emoji.width * 0.5) / emoji.width
   name.addChild(emoji)
   window.player.addChild(name)
+  window.healthText = window.game.add.text(
+    0, -45, `hp: ${user.hp_full}`,
+    {font: '11px Helvetica', fill: '#00ff00', align: 'center', stroke: '#000', strokeThickness: 2}
+  )
+  window.healthText.anchor.x = Math.round(window.healthText.width * 0.5) / window.healthText.width
+  window.player.addChild(window.healthText)
 
   window.weapon = window.game.add.weapon(2, `${user.type}_WEAPON`)
   window.weapon.bulletKillType = Phaser.Weapon.KILL_DISTANCE
@@ -62,8 +68,12 @@ export function create(user, uid, fireDB) {
     weaponRef.set({angle: weapon.fireAngle, when: millisecond})
   })
   window.keys.spacebar.onDown.add(() => {
-    window.weapon.fireAngle = 360 - (window.player.orientation * 90)
-    window.weapon.fire()
+    if (window.weapon) {
+      window.weapon.fireAngle = 360 - (window.player.orientation * 90)
+      window.weapon.fire()
+    } else {
+      return
+    }
   }, this)
 
   // create opponent cats

@@ -84,18 +84,34 @@ export function update(fireDB, uid) {
   })
 
   // FIREBASE UPDATES
-  // Send this persons' cat movements to firebase
-  const updates = {}
-  updates['map/' + uid + '/x'] = window.player.x
-  updates['map/' + uid + '/y'] = window.player.y
-  fireDB.ref().update(updates)
+  // Send this persons' cat movements to firebase, if they exist on the map
+  fireDB.ref('map/').once('value', (snapshot) => {
+    if (snapshot.val().hasOwnProperty(uid)) {
+      const updates = {}
+      updates['map/' + uid + '/x'] = window.player.x
+      updates['map/' + uid + '/y'] = window.player.y
+      fireDB.ref().update(updates)
+    }
+  })
+
+  // check the health of this player
   if (window.actionStack[uid]) {
     const userStack = window.actionStack[uid]
     if (userStack.length > 0) {
       const newestAction = userStack.pop()
       window.actionStack[uid] = []
-      if (newestAction.hp_now === 0) {
+      const { hp_now } = newestAction
+      window.healthText.text = `hp: ${hp_now}`
+      if (hp_now === 0) {
         window.player.kill()
+        window.weapon.destroy()
+        delete window.weapon
+        delete window.actionStack[uid]
+        if (window.catSpritesOnMap[uid]) {
+          delete window.catSpritesOnMap[uid]
+        }
+        fireDB.ref('weapon/' + uid).remove()
+        fireDB.ref('map/' + uid).remove()
         // launch modal
       }
     }
@@ -112,9 +128,10 @@ export function update(fireDB, uid) {
         // clear the action stack so we know when the server has stopped sending
         // us updates for this cat
         window.actionStack[uid_] = []
-        const { x, y } = newestAction
+        const { x, y, hp_now } = newestAction
         window.catSpritesOnMap[uid_].setCoord(x, y)
-        if (newestAction.hp_now === 0) {
+        window.catSpritesOnMap[uid_].setHealth(hp_now)
+        if (hp_now === 0) {
           window.catSpritesOnMap[uid_].cat.kill()
         }
       } else {

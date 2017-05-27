@@ -36,6 +36,12 @@ export default class Cat {
       emoji.anchor.x = Math.round(emoji.width * 0.5) / emoji.width
       name.addChild(emoji)
       this.cat.addChild(name)
+      this.healthText = game.add.text(
+        0, -45, `hp: ${catSettings.hp_full}`,
+        {font: '11px Helvetica', fill: '#00ff00', align: 'center', stroke: '#000', strokeThickness: 2}
+      )
+      this.healthText.anchor.x = Math.round(this.healthText.width * 0.5) / this.healthText.width
+      this.cat.addChild(this.healthText)
 
       // weapon
       this.weapon = window.game.add.weapon(40, `${catSettings.type}_WEAPON`)
@@ -69,6 +75,9 @@ export default class Cat {
       this.cat.y = y
       this.prev = {x: x, y: y}
     }
+  }
+  setHealth(hp) {
+    this.healthText.text = `hp: ${hp}`
   }
   fireWeapon(fireAngle) {
     if (this.weapon) {

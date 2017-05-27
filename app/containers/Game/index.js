@@ -47,7 +47,9 @@ class GameContainer extends React.Component {
 
     // watch for changes from cats (ie movements or attacks)
     globalMapRef.on('child_changed', (data) => {
-      window.actionStack[data.key].push(data.val())
+      if (window.actionStack[data.key]) {
+        window.actionStack[data.key].push(data.val())
+      }
     })
 
     // build and run the game
@@ -75,8 +77,10 @@ class GameContainer extends React.Component {
     })
     globalMapRef.on('child_removed', (data) => {
       delete window.actionStack[data.key]
-      window.catSpritesOnMap[data.key].cat.destroy()
-      delete window.catSpritesOnMap[data.key]
+      if (window.catSpritesOnMap[data.key]) {
+        window.catSpritesOnMap[data.key].cat.destroy()
+        delete window.catSpritesOnMap[data.key]
+      }
     })
 
     // watch for weapons fired by other cats
