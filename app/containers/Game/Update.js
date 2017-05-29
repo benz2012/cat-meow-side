@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 import Cat from './cat'
 import { GAME } from 'config'
 
-export function update(fireDB, uid) {
+export function update(fireDB, uid, died) {
   window.player.body.setZeroVelocity()
 
   const up = window.cursors.up.isDown
@@ -113,6 +113,7 @@ export function update(fireDB, uid) {
         fireDB.ref('weapon/' + uid).remove()
         fireDB.ref('map/' + uid).remove()
         // launch modal
+        died()
       }
     }
   }

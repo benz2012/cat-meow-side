@@ -8,11 +8,11 @@ import Cat from './cat'
 import { GAME } from 'config'
 
 class Game extends Phaser.Game {
-  constructor(fireDB, user, uid) {
+  constructor(fireDB, user, uid, died) {
     super(GAME.WIDTH, GAME.HEIGHT, Phaser.CANVAS, 'phaser-game', {
           preload: preload,
           create: () => (create(user, uid, fireDB)),
-          update: () => (update(fireDB, uid)),
+          update: () => (update(fireDB, uid, died)),
     })
   }
 }
@@ -58,7 +58,7 @@ class GameContainer extends React.Component {
     let user = {}
     userRef.once('value').then((snapshot) => {
       user = snapshot.val()
-      window.game = new Game(fireDB, user, uid)
+      window.game = new Game(fireDB, user, uid, this.died.bind(this))
     })
     mapRef.onDisconnect().remove()
 
@@ -109,6 +109,9 @@ class GameContainer extends React.Component {
 
     fireDB.ref('active/' + uid).onDisconnect().remove()
     fireDB.ref('weapon/' + uid).onDisconnect().remove()
+  }
+  died() {
+    this.props.died()
   }
   render() {
     return (
