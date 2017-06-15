@@ -16,6 +16,10 @@ GAME.CAT.HP = Object.freeze({
   WORRIER: 10,
   WARRIOR: 15,
 })
+GAME.CAT.WEAPON_DISTANCE = Object.freeze({
+  WORRIER: 300,
+  WARRIOR: 20
+})
 GAME.CAT.COLOR = Object.freeze({
   WHITE_STRIPPED: 0,
   WHITE: 1,
@@ -27,7 +31,7 @@ GAME.CAT.COLOR = Object.freeze({
 })
 GAME.CAT.SPEED = Object.freeze({
   STRAIGHT: 300,
-  DIAGONAL: 212,
+  DIAGONAL: 212, // should always be STRAIGHT / rad(2)
 })
 
 GAME.CAT.DIRECTION = Object.freeze({

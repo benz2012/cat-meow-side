@@ -1,27 +1,30 @@
 import Phaser from 'phaser'
 
 import Cat from './cat'
+import { getKeyByValue } from 'utils/objectUtils'
+import { GAME } from 'config'
 
 window.cursors
 window.keys = {}
 window.player
-
-import { GAME } from 'config'
+window.weapon
 
 export function create(user, uid, fireDB) {
-  game.physics.startSystem(Phaser.Physics.P2JS)
+  window.game.physics.startSystem(Phaser.Physics.P2JS)
 
-  const map = game.add.tilemap('map', 16, 16)
+  const map = window.game.add.tilemap('map', 16, 16)
   map.addTilesetImage('grass')
   const layer = map.createLayer(0)
   layer.resizeWorld()
 
   const text_center = center({width: 200, height: 50})
-  game.add.text(text_center.x, text_center.y-100, 'Cats Meow Side\nHow Bow Dat', {font: 'bold 32px Helvetica', fill: '#fff', align: 'center'})
+  window.game.add.text(text_center.x, text_center.y-100, 'Cats Meow Side\nHow Bow Dat', {font: 'bold 32px Helvetica', fill: '#fff', align: 'center'})
 
-  window.player = game.add.sprite(game.world.centerX, game.world.centerY, `${user.color}_CAT`)
-  game.physics.p2.enable(window.player)
-  window.player.body.fixedRotation = true;
+  window.player = window.game.add.sprite(window.game.world.centerX, window.game.world.centerY, `${user.color}_CAT`)
+  window.game.physics.p2.enable(window.player)
+  window.player.body.fixedRotation = true
+  window.player.orientation = GAME.CAT.DIRECTION.SOUTH
+  const catType = getKeyByValue(GAME.CAT.TYPE, user.type)
   fireDB.ref('map/' + uid).set({hp_now: user.hp_full, x: window.player.x, y: window.player.y})
 
   window.player.animations.add('left', [3, 4, 5], 10, true)
@@ -29,31 +32,58 @@ export function create(user, uid, fireDB) {
   window.player.animations.add('down', [0, 1, 2], 10, true)
   window.player.animations.add('up', [9, 10, 11], 10, true)
 
-  const name = game.add.text(
+  const name = window.game.add.text(
     0, -30, `${user.name}`,
     {font: '11px Helvetica', fill: '#fff', align: 'center', stroke: '#000', strokeThickness: 2}
   )
   name.anchor.x = Math.round(name.width * 0.5) / name.width
-  const emoji = game.add.image(
+  const emoji = window.game.add.image(
     (name.width / 2) + 8, 2, `${user.type}_ICON`
   )
   emoji.anchor.x = Math.round(emoji.width * 0.5) / emoji.width
   name.addChild(emoji)
   window.player.addChild(name)
+  window.healthText = window.game.add.text(
+    0, -45, `hp: ${user.hp_full}`,
+    {font: '11px Helvetica', fill: '#00ff00', align: 'center', stroke: '#000', strokeThickness: 2}
+  )
+  window.healthText.anchor.x = Math.round(window.healthText.width * 0.5) / window.healthText.width
+  window.player.addChild(window.healthText)
 
-  game.physics.p2.setBoundsToWorld(true, true, true, true, false)
-  window.cursors = game.input.keyboard.createCursorKeys()
-  window.keys.spacebar = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR)
-  game.camera.follow(window.player)
+  window.weapon = window.game.add.weapon(2, `${user.type}_WEAPON`)
+  window.weapon.bulletKillType = Phaser.Weapon.KILL_DISTANCE
+  window.weapon.bulletKillDistance = GAME.CAT.WEAPON_DISTANCE[catType]
+  window.weapon.bulletSpeed = 800
+  window.weapon.trackSprite(window.player, 0, 0, false)
+
+  window.game.physics.p2.setBoundsToWorld(true, true, true, true, false)
+  window.cursors = window.game.input.keyboard.createCursorKeys()
+  window.keys.spacebar = window.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR)
+  window.game.camera.follow(window.player)
+
+  const weaponRef = fireDB.ref('weapon/' + uid)
+  window.weapon.onFire.add((bullet, weapon) => {
+    const newDate = new Date()
+    const millisecond = newDate.getTime()
+    weaponRef.set({angle: weapon.fireAngle, when: millisecond})
+  })
+  window.keys.spacebar.onDown.add(() => {
+    if (window.weapon) {
+      window.weapon.fireAngle = 360 - (window.player.orientation * 90)
+      window.weapon.fire()
+    } else {
+      return
+    }
+  }, this)
 
   // create opponent cats
   Object.keys(window.catsOnMap).forEach((catId) => {
     if (catId === uid) { return } // we already added our own cat
     const { x, y } = window.catsOnMap[catId]
-    const cat = new Cat(game, fireDB, catId, x, y)
+    const cat = new Cat(window.game, fireDB, catId, x, y)
     window.catSpritesOnMap[catId] = cat
   })
-
+  window.player.body.onBeginContact.add(() => console.log('something hit'), this)
 }
 
 function center(item, scale) {
@@ -61,7 +91,7 @@ function center(item, scale) {
     scale = [1, 1]
   }
   return {
-    x: game.world.centerX - (item.width/2/scale[0]),
-    y: game.world.centerY - (item.height/2/scale[1])
+    x: window.game.world.centerX - (item.width/2/scale[0]),
+    y: window.game.world.centerY - (item.height/2/scale[1])
   }
 }

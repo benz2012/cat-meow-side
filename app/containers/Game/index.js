@@ -8,11 +8,11 @@ import Cat from './cat'
 import { GAME } from 'config'
 
 class Game extends Phaser.Game {
-  constructor(fireDB, user, uid) {
+  constructor(fireDB, user, uid, died) {
     super(GAME.WIDTH, GAME.HEIGHT, Phaser.CANVAS, 'phaser-game', {
           preload: preload,
           create: () => (create(user, uid, fireDB)),
-          update: () => (update(fireDB, uid)),
+          update: () => (update(fireDB, uid, died)),
     })
   }
 }
@@ -35,7 +35,7 @@ class GameContainer extends React.Component {
 
     // build initial object of cats on the map
     const globalMapRef = fireDB.ref('map')
-    const globalCatsRef = fireDB.ref('cats')
+    // const globalCatsRef = fireDB.ref('cats')
     globalMapRef.once('value').then((snapshot) => {
       const currentCatsOnMap = snapshot.val()
       if (!currentCatsOnMap) { return }
@@ -47,8 +47,9 @@ class GameContainer extends React.Component {
 
     // watch for changes from cats (ie movements or attacks)
     globalMapRef.on('child_changed', (data) => {
-      window.actionStack[data.key].push(data.val())
-      // console.log(window.actionStack)
+      if (window.actionStack[data.key]) {
+        window.actionStack[data.key].push(data.val())
+      }
     })
 
     // build and run the game
@@ -57,7 +58,7 @@ class GameContainer extends React.Component {
     let user = {}
     userRef.once('value').then((snapshot) => {
       user = snapshot.val()
-      window.game = new Game(fireDB, user, uid)
+      window.game = new Game(fireDB, user, uid, this.died.bind(this))
     })
     mapRef.onDisconnect().remove()
 
@@ -76,11 +77,41 @@ class GameContainer extends React.Component {
     })
     globalMapRef.on('child_removed', (data) => {
       delete window.actionStack[data.key]
-      window.catSpritesOnMap[data.key].destroy()
-      delete window.catSpritesOnMap[data.key]
+      if (window.catSpritesOnMap[data.key]) {
+        window.catSpritesOnMap[data.key].cat.destroy()
+        delete window.catSpritesOnMap[data.key]
+      }
     })
 
+    // watch for weapons fired by other cats
+    const globalWeaponRef = fireDB.ref('weapon')
+    let ignoreInitialWeapon = true
+    globalWeaponRef.on('child_added', (data) => {
+      if (data.key === uid) { return } // ignore own cats weapons
+      if (!ignoreInitialWeapon) {
+        fireFromCat(data)
+      }
+    })
+    globalWeaponRef.once('value').then(() => { ignoreInitialWeapon = false })
+    globalWeaponRef.on('child_changed', (data) => {
+      if (data.key === uid) { return } // ignore own cats weapons
+      fireFromCat(data)
+    })
+    function fireFromCat(data) {
+      const uid_ = data.key
+      const weaponInfo = data.val()
+      if (window.catSpritesOnMap[uid_] instanceof Cat) {
+        if (window.catSpritesOnMap[uid_].weapon) {
+          window.catSpritesOnMap[uid_].fireWeapon(weaponInfo.angle)
+        }
+      }
+    }
+
     fireDB.ref('active/' + uid).onDisconnect().remove()
+    fireDB.ref('weapon/' + uid).onDisconnect().remove()
+  }
+  died() {
+    this.props.died()
   }
   render() {
     return (

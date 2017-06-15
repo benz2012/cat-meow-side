@@ -20,4 +20,8 @@ export function preload() {
   // User Icons
   game.load.image(`${GAME.CAT.TYPE.WORRIER}_ICON`, 'assets/image/droplet_12.png')
   game.load.image(`${GAME.CAT.TYPE.WARRIOR}_ICON`, 'assets/image/swords_12.png')
+
+  // Weapons
+  game.load.image(`${GAME.CAT.TYPE.WORRIER}_WEAPON`, 'assets/image/droplet_16.png')
+  game.load.image(`${GAME.CAT.TYPE.WARRIOR}_WEAPON`, 'assets/image/swords_16.png')
 }

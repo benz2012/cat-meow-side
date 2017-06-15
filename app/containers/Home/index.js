@@ -5,6 +5,7 @@ import Auth from 'containers/Auth'
 import GameContainer from 'containers/Game'
 import UserSettings from 'containers/UserSettings'
 import Jumbotron from 'components/Jumbotron'
+import Death from 'components/Death'
 import { FIREBASE_CONFIG } from 'config'
 
 export default class Home extends React.Component {
@@ -15,6 +16,8 @@ export default class Home extends React.Component {
       firebase: null,
       uid: null,
       highlights: null,
+      gameTime: null,
+      died: false,
     }
   }
   componentWillMount() {
@@ -22,6 +25,8 @@ export default class Home extends React.Component {
     firebase.auth().signOut();
     this.setState({firebase: firebase}, this.observer)
     this.fetchHighlights()
+    const now = new Date()
+    this.setState({gameTime: now.getTime()})
   }
   fetchHighlights() {
     const url = 'https://api.github.com/repos/benz2012/cat-meow-side/issues?'
@@ -50,7 +55,9 @@ export default class Home extends React.Component {
         view = <UserSettings firebase={firebase} uid={uid} />
         break;
       case 'GAMEPLAY':
-        view = <GameContainer firebase={firebase} uid={uid} />
+        view = <GameContainer key={this.state.gameTime}
+          died={this.died.bind(this)}
+          firebase={firebase} uid={uid} />
         break;
       default:
         view = null
@@ -94,11 +101,21 @@ export default class Home extends React.Component {
       }
     })
   }
-
+  died() {
+    // console.log('you died!')
+    this.setState({died: true})
+  }
+  resetGame() {
+    // console.log('resetting')
+    const now = new Date()
+    this.setState({gameTime: now.getTime()})
+    this.setState({died: false})
+  }
   render() {
     return (
       <div>
         <Jumbotron />
+        {this.state.died && <Death resetGame={this.resetGame.bind(this)} />}
         {this.stageView()}
       </div>
     )
