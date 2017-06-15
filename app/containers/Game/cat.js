@@ -1,3 +1,4 @@
+import { getKeyByValue } from 'utils/objectUtils'
 import { GAME } from 'config'
 
 export default class Cat {
@@ -7,6 +8,8 @@ export default class Cat {
     fireDB.ref('cats/' + uid).once('value').then((snapshot) => {
       const catSettings = snapshot.val()
       this.cat = game.add.sprite(x, y, `${catSettings.color}_CAT`, 1)
+      // window.game.physics.p2.enable(this.cat)
+      // this.cat.body.fixedRotation = true
       this.prev = {x: this.cat.x, y: this.cat.y}
       this.cat.anchor.x = 0.5
       this.cat.anchor.y = 0.5
@@ -33,6 +36,20 @@ export default class Cat {
       emoji.anchor.x = Math.round(emoji.width * 0.5) / emoji.width
       name.addChild(emoji)
       this.cat.addChild(name)
+      this.healthText = game.add.text(
+        0, -45, `hp: ${catSettings.hp_full}`,
+        {font: '11px Helvetica', fill: '#00ff00', align: 'center', stroke: '#000', strokeThickness: 2}
+      )
+      this.healthText.anchor.x = Math.round(this.healthText.width * 0.5) / this.healthText.width
+      this.cat.addChild(this.healthText)
+
+      // weapon
+      this.weapon = window.game.add.weapon(40, `${catSettings.type}_WEAPON`)
+      const catType = getKeyByValue(GAME.CAT.TYPE, catSettings.type)
+      this.weapon.bulletKillType = Phaser.Weapon.KILL_DISTANCE
+      this.weapon.bulletKillDistance = GAME.CAT.WEAPON_DISTANCE[catType]
+      this.weapon.bulletSpeed = 800
+      this.weapon.trackSprite(this.cat, 0, 0, false)
     })
   }
   setCoord(x, y) {
@@ -57,6 +74,15 @@ export default class Cat {
       this.cat.x = x
       this.cat.y = y
       this.prev = {x: x, y: y}
+    }
+  }
+  setHealth(hp) {
+    this.healthText.text = `hp: ${hp}`
+  }
+  fireWeapon(fireAngle) {
+    if (this.weapon) {
+      this.weapon.fireAngle = fireAngle
+      this.weapon.fire()
     }
   }
   destroy() {

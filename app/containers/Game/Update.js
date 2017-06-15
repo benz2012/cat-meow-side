@@ -1,8 +1,9 @@
-import Cat from './cat'
+import Phaser from 'phaser'
 
+import Cat from './cat'
 import { GAME } from 'config'
 
-export function update(fireDB, uid) {
+export function update(fireDB, uid, died) {
   window.player.body.setZeroVelocity()
 
   const up = window.cursors.up.isDown
@@ -17,33 +18,41 @@ export function update(fireDB, uid) {
   if (up && !(left || right)) {
     window.player.body.moveUp(straight)
     window.player.animations.play('up')
+    window.player.orientation = GAME.CAT.DIRECTION.NORTH
   } else if (up && left) {
     window.player.body.moveUp(diagonal)
     window.player.body.moveLeft(diagonal)
     window.player.animations.play('left')
+    window.player.orientation = GAME.CAT.DIRECTION.WEST
   } else if (up && right) {
     window.player.body.moveUp(diagonal)
     window.player.body.moveRight(diagonal)
     window.player.animations.play('right')
+    window.player.orientation = GAME.CAT.DIRECTION.EAST
   } else if (down && !(left || right)) {
     window.player.body.moveDown(straight)
     window.player.animations.play('down')
+    window.player.orientation = GAME.CAT.DIRECTION.SOUTH
   } else if (down && left){
     window.player.body.moveDown(diagonal)
     window.player.body.moveLeft(diagonal)
     window.player.animations.play('left')
+    window.player.orientation = GAME.CAT.DIRECTION.WEST
   } else if (down && right) {
     window.player.body.moveDown(diagonal)
     window.player.body.moveRight(diagonal)
     window.player.animations.play('right')
+    window.player.orientation = GAME.CAT.DIRECTION.EAST
   }
 
   if (left && !(up || down)) {
     window.player.body.moveLeft(straight)
     window.player.animations.play('left')
+    window.player.orientation = GAME.CAT.DIRECTION.WEST
   } else if (right && !(up || down)) {
     window.player.body.moveRight(straight)
     window.player.animations.play('right')
+    window.player.orientation = GAME.CAT.DIRECTION.EAST
   }
 
   if (!(up || down || left || right)) {
@@ -51,16 +60,63 @@ export function update(fireDB, uid) {
     window.player.animations.stop()
   }
 
-  if (spacebar) {
-    console.log('spacebar')
-  }
+  // COLISSION CHECKS
+  Object.keys(window.catSpritesOnMap).forEach(key => {
+    const otherCat = window.catSpritesOnMap[key]
+    // skip if either cat doesn't exist
+    if (!(otherCat && otherCat.cat)) { return }
+    if (typeof otherCat.cat.getBounds === 'function') {
+      if (window.weapon) {
+        if (window.weapon.bullets) {
+          if (window.weapon.bullets.children) {
+            window.weapon.bullets.children.forEach(bullet => {
+              if (bullet.alive) {
+                if (checkOverlap(bullet, otherCat.cat)) {
+                  bullet.kill()
+                  hurt(fireDB, key)
+                }
+              }
+            })
+          }
+        }
+      }
+    }
+  })
 
   // FIREBASE UPDATES
-  // Send this persons' cat movements to firebase
-  const updates = {}
-  updates['map/' + uid + '/x'] = window.player.x
-  updates['map/' + uid + '/y'] = window.player.y
-  fireDB.ref().update(updates)
+  // Send this persons' cat movements to firebase, if they exist on the map
+  fireDB.ref('map/').once('value', (snapshot) => {
+    if (snapshot.val().hasOwnProperty(uid)) {
+      const updates = {}
+      updates['map/' + uid + '/x'] = window.player.x
+      updates['map/' + uid + '/y'] = window.player.y
+      fireDB.ref().update(updates)
+    }
+  })
+
+  // check the health of this player
+  if (window.actionStack[uid]) {
+    const userStack = window.actionStack[uid]
+    if (userStack.length > 0) {
+      const newestAction = userStack.pop()
+      window.actionStack[uid] = []
+      const { hp_now } = newestAction
+      window.healthText.text = `hp: ${hp_now}`
+      if (hp_now === 0) {
+        window.player.kill()
+        window.weapon.destroy()
+        delete window.weapon
+        delete window.actionStack[uid]
+        if (window.catSpritesOnMap[uid]) {
+          delete window.catSpritesOnMap[uid]
+        }
+        fireDB.ref('weapon/' + uid).remove()
+        fireDB.ref('map/' + uid).remove()
+        // launch modal
+        died()
+      }
+    }
+  }
 
   // Update features of other cats
   Object.keys(window.actionStack).forEach((uid_) => {
@@ -73,8 +129,12 @@ export function update(fireDB, uid) {
         // clear the action stack so we know when the server has stopped sending
         // us updates for this cat
         window.actionStack[uid_] = []
-        const { x, y } = newestAction
+        const { x, y, hp_now } = newestAction
         window.catSpritesOnMap[uid_].setCoord(x, y)
+        window.catSpritesOnMap[uid_].setHealth(hp_now)
+        if (hp_now === 0) {
+          window.catSpritesOnMap[uid_].cat.kill()
+        }
       } else {
         // if no cat updates from server, stop its sprite animation
         if (window.catSpritesOnMap[uid_].cat) {
@@ -85,4 +145,21 @@ export function update(fireDB, uid) {
       }
     }
   })
+}
+
+function checkOverlap(spriteA, spriteB) {
+  const boundsA = spriteA.getBounds()
+  const boundsB = spriteB.getBounds()
+  return Phaser.Rectangle.intersects(boundsA, boundsB)
+}
+
+function hurt(fireDB, catId) {
+  fireDB.ref('map/' + catId).transaction((cat) => {
+    if (cat) {
+      if (cat.hp_now) {
+        cat.hp_now -= 1
+      }
+    }
+    return cat
+  });
 }
