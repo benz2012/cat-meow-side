@@ -1,6 +1,6 @@
 # Cats Meow Side
 
-A basic game of war, with cats. [Play Game](https://www.singletear.world/)
+A basic game of war, with cats. [Play Game](https://cats-meow-side.herokuapp.com/)
 
 This is an online multiplier game of war. The battle takes place in a free for all arena between Melee and Ranged style attacks. Collect items, kill other cats, and be ready to Cats Meow Side for the ultimate challenge.
 
