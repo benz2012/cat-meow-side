@@ -15,9 +15,9 @@ const forceSSL = (req, res, next) => {
 }
 
 // Routes
-if (env === 'production') {
-  app.use(forceSSL)
-}
+// if (env === 'production') {
+//   app.use(forceSSL)
+// }
 app.use(express.static('dist'))
 
 // Listen
